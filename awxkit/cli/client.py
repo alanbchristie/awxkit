@@ -17,7 +17,9 @@ from awxkit.cli.utils import HelpfulArgumentParser, cprint, disable_color, color
 from awxkit.awx.utils import uses_sessions  # noqa
 
 
-__version__ = _get_version('awxkit')
+# the distribution name (setup.py name=), not the import name: this fork
+# publishes as `alanbchristie-awxkit` because PyPI's `awxkit` is upstream's
+__version__ = _get_version('alanbchristie-awxkit')
 
 
 class CLI(object):

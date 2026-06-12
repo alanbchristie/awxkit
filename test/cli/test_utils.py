@@ -42,3 +42,15 @@ def test_cli_version_is_resolvable_without_pkg_resources():
     from awxkit.cli.client import __version__
 
     assert __version__
+
+
+def test_cli_version_comes_from_the_renamed_distribution():
+    # This fork publishes to PyPI as `alanbchristie-awxkit` because the
+    # `awxkit` name is taken by upstream ansible/awx. The CLI's version
+    # lookup must use the distribution name (not the `awxkit` import name)
+    # or the CLI crashes on import once the package is renamed (issue #2)
+    from importlib.metadata import version
+
+    from awxkit.cli.client import __version__
+
+    assert __version__ == version('alanbchristie-awxkit')
