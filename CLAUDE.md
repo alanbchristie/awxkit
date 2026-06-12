@@ -46,14 +46,22 @@ change in argparse 3.13 (ansible/awx#16441), `pkg_resources` →
 1. **`VERSION` file** in the repo root (not in git; listed in MANIFEST.in).
    If present, its contents are the version verbatim and setuptools_scm is
    skipped entirely.
-2. **setuptools_scm** on this repository's own git tags. setuptools_scm's
-   default tag regex strips a `name-` prefix, so a tag like
-   `alanbchristie-awxkit-1.0.0` yields version `1.0.0` (plain `1.0.0` tags
-   work too). An untagged commit yields a dev version such as
-   `1.0.1.dev3+gabc1234`.
+2. **setuptools_scm** on this repository's own git tags. An untagged commit
+   yields a dev version such as `1.0.1.dev3+gabc1234`.
 
 `SETUPTOOLS_SCM_PRETEND_VERSION=X.Y.Z` overrides both — handy for builds
-from shallow clones or for pinning a release version explicitly.
+from shallow clones or for pinning a release version explicitly. The
+publish workflow uses it to pass the release tag through, so the override
+only accepts strings `packaging.version.Version` can parse — name-prefixed
+tags like `alanbchristie-awxkit-1.0.0` raise `InvalidVersion` here, even
+though setuptools_scm's own tag discovery would strip the prefix. (One such
+legacy tag exists; release tags are plain semver from `1.0.1` onward.)
+
+**Release tags must be plain semver**: `X.Y.Z`, optionally with an
+`-alpha[.N]`, `-beta[.N]`, or `-rc[.N]` pre-release suffix (enforced by a
+fail-fast check in `publish.yaml`). Pre-release versions normalise to
+their PEP 440 spellings in the built artifacts (`1.0.0-rc.1` → `1.0.0rc1`)
+and PyPI/pip treat them as pre-releases.
 
 At runtime the CLI reports its version via
 `importlib.metadata.version('alanbchristie-awxkit')` (`awxkit/cli/client.py`),
@@ -63,9 +71,15 @@ so the package **must be installed** (`pip install -e .` is fine) for
 
 ## Building a release
 
+Normal releases are published by `.github/workflows/publish.yaml`: create a
+GitHub release on `main` whose tag is a plain semver version (see
+"Versioning" above) and the workflow builds the package with the tag as its
+version and uploads it to PyPI via trusted publishing (GitHub Environment
+`pypi`). To build/upload manually instead:
+
 ```bash
 pip install build twine setuptools-scm
-git tag <new-version-tag>
+git tag <X.Y.Z>
 python -m build
 twine upload -r <pypi|testpypi> dist/*
 ```

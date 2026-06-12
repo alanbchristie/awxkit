@@ -3,9 +3,15 @@ name: publish
 
 # Publishes the package to PyPI as 'alanbchristie-awxkit' when a GitHub
 # release is published against the main branch. The release tag is used
-# verbatim as the package version (it must be a valid semver/PEP 440
-# version, e.g. '1.0.0') via SETUPTOOLS_SCM_PRETEND_VERSION, which
-# overrides both the VERSION file and setuptools_scm tag discovery.
+# verbatim as the package version via SETUPTOOLS_SCM_PRETEND_VERSION,
+# which overrides both the VERSION file and setuptools_scm tag discovery.
+#
+# Release tags must be plain semver: 'X.Y.Z', optionally with an alpha,
+# beta, or release-candidate pre-release ('-alpha[.N]', '-beta[.N]',
+# '-rc[.N]'). The build fails fast on any other tag. Pre-release
+# versions are normalised to their PEP 440 spellings in the published
+# artifacts (e.g. '1.0.0-rc.1' -> '1.0.0rc1'), which PyPI treats as
+# pre-releases (pip skips them unless asked for with --pre).
 #
 # Publication uses PyPI 'trusted publishing' (OIDC) — no API token is
 # stored in the repository. The PyPI publisher is configured to trust
@@ -25,6 +31,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Validate release tag is semver
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc)(\.(0|[1-9][0-9]*))?)?$'
+          if ! echo "$TAG" | grep -Eq "$SEMVER_REGEX"; then
+            echo "::error::Release tag '$TAG' is not a supported version. Use semver 'X.Y.Z', optionally with an '-alpha[.N]', '-beta[.N]' or '-rc[.N]' pre-release suffix."
+            exit 1
+          fi
+
       - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
