@@ -2,6 +2,7 @@ alanbchristie-awxkit
 ====================
 
 [![CI](https://github.com/alanbchristie/awxkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alanbchristie/awxkit/actions/workflows/ci.yml?query=branch%3Amain)
+[![Release](https://img.shields.io/github/v/tag/alanbchristie/awxkit?sort=semver&label=release)](https://github.com/alanbchristie/awxkit/releases)
 
 A Python library that backs the provided `awx` command line client.
 
