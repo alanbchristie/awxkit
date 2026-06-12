@@ -23,6 +23,12 @@ def version_file():
         return version_file
 
 
+def get_long_description():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(current_dir, 'README.md'), 'r') as readme_file:
+        return readme_file.read()
+
+
 def setup_requires():
     if version_file():
         return []
@@ -81,6 +87,8 @@ setup(
     name='awxkit',
     version=get_version_from_file(),
     description='The official command line interface for Ansible AWX',
+    long_description=get_long_description(),
+    long_description_content_type='text/markdown',
     author='Red Hat, Inc.',
     author_email='info@ansible.com',
     url='https://github.com/ansible/awx',
