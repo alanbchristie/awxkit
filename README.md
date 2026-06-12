@@ -24,7 +24,7 @@ License
 -------
 
 The original work is copyright the AWX project contributors (Red Hat, Inc.)
-and is licensed under the [Apache License 2.0](./LICENSE.md). The files in
+and is licensed under the **Apache License 2.0**. The files in
 this repository have been modified from the upstream originals — notably for
 Python 3.13/3.14 compatibility and standalone packaging — and those
 modifications are distributed under the same Apache License 2.0.
