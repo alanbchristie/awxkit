@@ -18,7 +18,7 @@ belongs to upstream), but it installs the same `awxkit` Python package and
 `awx`/`akit` commands as the original — so don't install it alongside
 upstream `awxkit`.
 
-For more information on installing the CLI and building the docs on how to use it, look [here](./awxkit/cli/docs).
+For more information on installing the CLI and building the docs on how to use it, look [here](https://github.com/ansible/awx/tree/24.6.1/awxkit/awxkit/cli/docs).
 
 License
 -------
