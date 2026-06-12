@@ -5,7 +5,7 @@ alanbchristie-awxkit
 [![Release](https://img.shields.io/github/v/tag/alanbchristie/awxkit?sort=semver&label=release)](https://github.com/alanbchristie/awxkit/releases)
 [![PyPI](https://img.shields.io/pypi/v/alanbchristie-awxkit)](https://pypi.org/project/alanbchristie-awxkit/)
 
-A Python library that backs the provided `awx` command line client.
+A distribution of the Ansible [awxkit](https://github.com/ansible/awx) that works for Python 3.13+.
 
 This repository is an **unofficial** fork of the `awxkit` directory of
 [ansible/awx](https://github.com/ansible/awx), extracted (with history) at
