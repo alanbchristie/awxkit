@@ -1,0 +1,66 @@
+---
+name: publish
+
+# Publishes the package to PyPI as 'alanbchristie-awxkit' when a GitHub
+# release is published against the main branch. The release tag is used
+# verbatim as the package version (it must be a valid semver/PEP 440
+# version, e.g. '1.0.0') via SETUPTOOLS_SCM_PRETEND_VERSION, which
+# overrides both the VERSION file and setuptools_scm tag discovery.
+#
+# Publication uses PyPI 'trusted publishing' (OIDC) — no API token is
+# stored in the repository. The PyPI publisher is configured to trust
+# this workflow file with the GitHub Environment name 'pypi'.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build distributions
+    if: github.event.release.target_commitish == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install build tooling
+        run: python -m pip install build twine
+
+      - name: Build distributions
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.event.release.tag_name }}
+        run: python -m build
+
+      - name: Check distributions
+        run: twine check dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: pypi
+    permissions:
+      # Required for PyPI trusted publishing (OIDC)
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
