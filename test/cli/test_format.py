@@ -1,13 +1,29 @@
 import io
 import json
 
+import pytest
 import yaml
 
 from awxkit.api.pages import Page
 from awxkit.api.pages.users import Users
 from awxkit.cli import CLI
-from awxkit.cli.format import format_response
+from awxkit.cli.format import format_response, strtobool
 from awxkit.cli.resource import Import
+
+
+@pytest.mark.parametrize('truthy', ['y', 'yes', 't', 'true', 'on', '1', 'True', 'YES'])
+def test_strtobool_truthy(truthy):
+    assert strtobool(truthy) == 1
+
+
+@pytest.mark.parametrize('falsy', ['n', 'no', 'f', 'false', 'off', '0', 'False', 'NO'])
+def test_strtobool_falsy(falsy):
+    assert strtobool(falsy) == 0
+
+
+def test_strtobool_rejects_anything_else():
+    with pytest.raises(ValueError):
+        strtobool('not-a-truth-value')
 
 
 def test_json_empty_list():

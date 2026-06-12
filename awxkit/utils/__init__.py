@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, timedelta, timezone, tzinfo
 import inspect
 import logging
 import random
@@ -363,8 +363,8 @@ def are_same_endpoint(first, second):
 
 
 def utcnow():
-    """Provide a wrapped copy of the built-in utcnow that can be easily mocked."""
-    return datetime.utcnow()
+    """Provide a naive UTC datetime (like the removed datetime.utcnow) that can be easily mocked."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 class UTC(tzinfo):

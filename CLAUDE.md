@@ -14,6 +14,13 @@ Upstream publishes this directory to PyPI as `awxkit` (last upstream release
 of this fork's lineage: `24.6.1`). This fork exists to publish its own package
 from here.
 
+**This fork supports Python 3.13 and 3.14 only** (`python_requires >= 3.13`).
+The branch carries fixes that upstream 24.6.1 lacked for modern Pythons:
+the `HelpfulArgumentParser._parse_known_args()` signature change in argparse
+3.13 (ansible/awx#16441), `pkg_resources` → `importlib.metadata`,
+`distutils` removal (`LooseVersion` → `packaging.version.Version`, a local
+`strtobool` in `cli/format.py`), and `datetime.utcnow()` deprecation.
+
 ## Layout
 
 ```
@@ -85,21 +92,20 @@ the parent repo is required.
 
 ```bash
 cd awxkit
-tox -e test     # the suite that matters (286 tests; verified passing 2026-06)
+tox             # runs py313 + py314 (264 tests each; verified passing 2026-06)
+tox -e py313    # one interpreter only
 tox -e lint     # flake8 — currently FAILS, see below
 ```
 
 **The lint env is bitrotted — do not trust it.** The code is formatted by
 black at line-length 160 (repo-root `pyproject.toml`), but `tox.ini` sets
 flake8 `max-line-length = 120`, so `flake8 awxkit` reports ~200 E501
-violations (plus E203, a known black/flake8 conflict). Upstream CI never
-runs it: the root Makefile runs `tox -re py3`, which only executes the base
-testenv (pytest), not lint. A bare `tox` invocation runs both envs and will
-therefore fail on lint despite all tests passing.
+violations (plus E203, a known black/flake8 conflict). It is excluded from
+the default envlist; run it only to lint specific changed files.
 
 Tox specifics (`tox.ini`):
 
-- `basepython = python3.12` (package itself supports `>=3.11`).
+- Default envlist is `py313, py314` — the only supported interpreters.
 - Test deps: `websocket-client coverage mock pytest pytest-mock`.
 - The test command is
   `coverage run --parallel --source awxkit -m pytest --doctest-glob='*.md' --junit-xml=report.xml`,
@@ -116,12 +122,18 @@ pip install -e . websocket-client mock pytest pytest-mock
 pytest test/
 ```
 
+## CI
+
+`.github/workflows/awxkit-ci.yml` is this fork's dedicated workflow: on any
+push/PR touching `awxkit/**` it runs the tox suite on a Python 3.13 + 3.14
+matrix and builds + `twine check`s the sdist/wheel. It checks out with
+`fetch-depth: 0` because setuptools_scm needs the repo tags. The inherited
+upstream workflows (`ci.yml` etc.) test the full AWX stack in Docker and are
+irrelevant to this fork's packaging goal.
+
 ## Ties to the parent repo (the only ones that matter)
 
 - **Version source**: git tags live at the repo root (see Versioning above).
-- **CI**: the root `Makefile` `test` target runs `cd awxkit && tox -re py3`
-  as part of the AWX unit-test job; `.github/workflows/ci.yml` uploads
-  `awxkit/coverage.xml` and `awxkit/report.xml`.
 - **Formatting**: the root `make black` formats `awxkit/` with the repo-root
   `pyproject.toml` config (`line-length = 160`). This **conflicts** with
   flake8's `max-line-length = 120` in `tox.ini` — see below.
@@ -134,9 +146,10 @@ can be built and tested in complete isolation.
 
 ## Runtime dependencies
 
-From `setup.py`: `PyYAML`, `requests`, `packaging` (deliberately minimal).
-Extras: `[formatting]` → `jq`, `[websockets]` → `websocket-client==0.57.0`
-(pinned), `[crypto]` → `cryptography`. `python_requires >= 3.11`.
+From `setup.py`: `PyYAML`, `requests`, `packaging` (deliberately minimal —
+`packaging` is needed by `awxkit.awx.version_cmp`). Extras: `[formatting]` →
+`jq`, `[websockets]` → `websocket-client==0.57.0` (pinned), `[crypto]` →
+`cryptography`. `python_requires >= 3.13`.
 
 ## CLI docs
 

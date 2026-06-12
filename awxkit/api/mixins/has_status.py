@@ -1,7 +1,6 @@
-from datetime import datetime
 import json
 
-from awxkit.utils import poll_until
+from awxkit.utils import poll_until, utcnow
 from awxkit.exceptions import WaitUntilTimeout
 from awxkit.config import config
 
@@ -35,10 +34,10 @@ class HasStatus(object):
         return self
 
     def wait_until_completed(self, interval=5, timeout=60, **kwargs):
-        start_time = datetime.utcnow()
+        start_time = utcnow()
         HasStatus.wait_until_status(self, self.completed_statuses, interval=interval, timeout=timeout, **kwargs)
         if not getattr(self, 'event_processing_finished', True):
-            elapsed = datetime.utcnow() - start_time
+            elapsed = utcnow() - start_time
             time_left = timeout - elapsed.total_seconds()
             poll_until(lambda: getattr(self.get(), 'event_processing_finished', True), interval=interval, timeout=time_left, **kwargs)
         return self
@@ -92,7 +91,7 @@ class HasStatus(object):
             except Exception as e:
                 msg += '\nFailed to obtain dependency stdout: {}'.format(e)
 
-        msg += '\nTIME WHEN STATUS WAS FOUND: {} (UTC)\n'.format(datetime.utcnow())
+        msg += '\nTIME WHEN STATUS WAS FOUND: {} (UTC)\n'.format(utcnow())
 
         raise AssertionError(msg)
 
