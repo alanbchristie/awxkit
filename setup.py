@@ -84,14 +84,15 @@ class CleanCommand(Command):
 
 
 setup(
-    name='awxkit',
+    name='alanbchristie-awxkit',
     version=get_version_from_file(),
-    description='The official command line interface for Ansible AWX',
+    description='An unofficial fork of awxkit, the command line interface for Ansible AWX',
     long_description=get_long_description(),
     long_description_content_type='text/markdown',
     author='Red Hat, Inc.',
     author_email='info@ansible.com',
-    url='https://github.com/ansible/awx',
+    maintainer='Alan Christie',
+    url='https://github.com/alanbchristie/awxkit',
     packages=find_packages(exclude=['test']),
     cmdclass={
         'clean': CleanCommand,

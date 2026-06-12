@@ -1,5 +1,5 @@
-awxkit
-======
+alanbchristie-awxkit
+====================
 
 [![CI](https://github.com/alanbchristie/awxkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alanbchristie/awxkit/actions/workflows/ci.yml?query=branch%3Amain)
 
@@ -10,6 +10,11 @@ This repository is an **unofficial** fork of the `awxkit` directory of
 upstream release `24.6.1` and maintained independently for
 **Python 3.13 and 3.14**. It is not affiliated with, or endorsed by,
 Red Hat or the Ansible project.
+
+The distribution is named `alanbchristie-awxkit` (the PyPI name `awxkit`
+belongs to upstream), but it installs the same `awxkit` Python package and
+`awx`/`akit` commands as the original — so don't install it alongside
+upstream `awxkit`.
 
 For more information on installing the CLI and building the docs on how to use it, look [here](./awxkit/cli/docs).
 

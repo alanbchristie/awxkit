@@ -56,9 +56,10 @@ change in argparse 3.13 (ansible/awx#16441), `pkg_resources` →
 from shallow clones or for pinning a release version explicitly.
 
 At runtime the CLI reports its version via
-`importlib.metadata.version('awxkit')` (`awxkit/cli/client.py:18`), so the
-package **must be installed** (`pip install -e .` is fine) for `awx --version`
-or any CLI usage to work — there is no hardcoded `__version__` in the source.
+`importlib.metadata.version('alanbchristie-awxkit')` (`awxkit/cli/client.py`),
+so the package **must be installed** (`pip install -e .` is fine) for
+`awx --version` or any CLI usage to work — there is no hardcoded
+`__version__` in the source.
 
 ## Building a release
 
@@ -74,10 +75,12 @@ The custom `python setup.py clean` command force-removes `__pycache__`,
 
 ### Gotchas
 
-- **The PyPI name `awxkit` is taken** by upstream ansible/awx. Publishing
-  from this repo requires changing `name=` in `setup.py` (and remember
-  `importlib.metadata.version('awxkit')` in `cli/client.py` must match the
-  new distribution name, or the CLI crashes on import).
+- **The distribution name is `alanbchristie-awxkit`** (the PyPI name `awxkit`
+  is taken by upstream ansible/awx), while the import package remains
+  `awxkit`. The `name=` in `setup.py` and the
+  `importlib.metadata.version('alanbchristie-awxkit')` call in
+  `cli/client.py` must stay in sync, or the CLI crashes on import —
+  `test/cli/test_utils.py` guards this.
 - Building from a shallow clone breaks setuptools_scm (no tags); either
   fetch tags, use `SETUPTOOLS_SCM_PRETEND_VERSION`, or drop a `VERSION` file.
 - To pull a future upstream awxkit fix, export it from an ansible/awx clone
