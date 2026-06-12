@@ -32,7 +32,9 @@ def setup_requires():
 
 extra_setup_args = {}
 if not version_file():
-    extra_setup_args.update(dict(use_scm_version=dict(root="..", relative_to=__file__), setup_requires=setup_requires()))
+    # this repository's own tags are the version source (the package used to
+    # live in the ansible/awx monorepo, where this pointed at root="..")
+    extra_setup_args.update(dict(use_scm_version=True, setup_requires=setup_requires()))
 
 
 class CleanCommand(Command):
